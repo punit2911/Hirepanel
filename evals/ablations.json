@@ -1,0 +1,374 @@
+[
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.943,
+    "auroc_medium_vs_weak": 0.942,
+    "decision_not_wrong": 0.75,
+    "decision_not_wrong_ci": [
+      0.666,
+      0.819
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 1.0,
+    "strong_shortlisted": 0.897,
+    "paraphrase_strong_rejected": 0.0,
+    "auto_decision_coverage": 0.892,
+    "auto_decision_precision": 0.822,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 34.9,
+    "strong_mean_score": 87.3,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Offline rules only (no model)",
+    "group": "baseline"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.937,
+    "auroc_medium_vs_weak": 0.915,
+    "decision_not_wrong": 0.7,
+    "decision_not_wrong_ci": [
+      0.613,
+      0.775
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.818,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 34.7,
+    "strong_mean_score": 87.7,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Ideal simulated model, full pipeline",
+    "group": "baseline"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.937,
+    "auroc_medium_vs_weak": 0.907,
+    "decision_not_wrong": 0.7,
+    "decision_not_wrong_ci": [
+      0.613,
+      0.775
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.818,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 36.9,
+    "strong_mean_score": 87.8,
+    "hallucinated_quotes_total": 99,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 1.6,
+      "mean_score_spread": 0.18,
+      "decision_flips": 0
+    },
+    "label": "Hallucinating model (30% invented evidence) + verifier ON",
+    "group": "verifier"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.938,
+    "auroc_medium_vs_weak": 0.912,
+    "decision_not_wrong": 0.75,
+    "decision_not_wrong_ci": [
+      0.666,
+      0.819
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.931,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.059,
+    "auto_decision_coverage": 0.85,
+    "auto_decision_precision": 0.814,
+    "attack_false_shortlist": 0.067,
+    "attack_false_shortlist_count": 2,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 40.7,
+    "strong_mean_score": 90.3,
+    "hallucinated_quotes_total": 99,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Hallucinating model (30% invented evidence) + verifier OFF",
+    "group": "verifier"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.926,
+    "auroc_medium_vs_weak": 0.903,
+    "decision_not_wrong": 0.717,
+    "decision_not_wrong_ci": [
+      0.63,
+      0.79
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.873,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 29.5,
+    "strong_mean_score": 78.8,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 26.9,
+      "mean_score_spread": 3.51,
+      "decision_flips": 1
+    },
+    "label": "Noisy model (sigma=0.25), dual scorers + adjudicator",
+    "group": "scorers"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.938,
+    "auroc_medium_vs_weak": 0.919,
+    "decision_not_wrong": 0.725,
+    "decision_not_wrong_ci": [
+      0.639,
+      0.797
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.931,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.118,
+    "auto_decision_coverage": 0.908,
+    "auto_decision_precision": 0.881,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 31.4,
+    "strong_mean_score": 82.3,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 16.9,
+      "mean_score_spread": 2.5,
+      "decision_flips": 1
+    },
+    "label": "Noisy model (sigma=0.25), single scorer",
+    "group": "scorers"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.937,
+    "auroc_medium_vs_weak": 0.915,
+    "decision_not_wrong": 0.7,
+    "decision_not_wrong_ci": [
+      0.613,
+      0.775
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.818,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 34.7,
+    "strong_mean_score": 87.7,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Injection-susceptible model + shield ON",
+    "group": "shield"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.937,
+    "auroc_medium_vs_weak": 0.915,
+    "decision_not_wrong": 0.7,
+    "decision_not_wrong_ci": [
+      0.613,
+      0.775
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.818,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.0,
+    "weak_mean_score": 34.7,
+    "strong_mean_score": 87.7,
+    "hallucinated_quotes_total": 12,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Injection-susceptible model + shield OFF",
+    "group": "shield"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.941,
+    "auroc_medium_vs_weak": 0.93,
+    "decision_not_wrong": 0.742,
+    "decision_not_wrong_ci": [
+      0.657,
+      0.812
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.931,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.059,
+    "auto_decision_coverage": 0.875,
+    "auto_decision_precision": 0.819,
+    "attack_false_shortlist": 0.533,
+    "attack_false_shortlist_count": 16,
+    "attack_flagged": 0.0,
+    "weak_mean_score": 37.2,
+    "strong_mean_score": 90.3,
+    "hallucinated_quotes_total": 12,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Injection-susceptible model, shield OFF and verifier OFF",
+    "group": "shield"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.922,
+    "auroc_medium_vs_weak": 0.871,
+    "decision_not_wrong": 0.708,
+    "decision_not_wrong_ci": [
+      0.622,
+      0.782
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.908,
+    "auto_decision_precision": 0.835,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 32.1,
+    "strong_mean_score": 84.9,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 21.7,
+      "mean_score_spread": 18.69,
+      "decision_flips": 3
+    },
+    "label": "Identity-biased model (-0.25 on identity cues) + blind mode ON (school names visible)",
+    "group": "blind"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.928,
+    "auroc_medium_vs_weak": 0.872,
+    "decision_not_wrong": 0.7,
+    "decision_not_wrong_ci": [
+      0.613,
+      0.775
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.862,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.917,
+    "auto_decision_precision": 0.818,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 33.5,
+    "strong_mean_score": 87.1,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 0.0,
+      "mean_score_spread": 0.0,
+      "decision_flips": 0
+    },
+    "label": "Identity-biased model + blind mode ON + institutions redacted",
+    "group": "blind"
+  },
+  {
+    "n_clean": 120,
+    "n_attacks": 30,
+    "auroc_strong_vs_rest": 0.926,
+    "auroc_medium_vs_weak": 0.905,
+    "decision_not_wrong": 0.692,
+    "decision_not_wrong_ci": [
+      0.604,
+      0.767
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 0.862,
+    "strong_shortlisted": 0.828,
+    "paraphrase_strong_rejected": 0.176,
+    "auto_decision_coverage": 0.942,
+    "auto_decision_precision": 0.92,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 0.9,
+    "weak_mean_score": 25.2,
+    "strong_mean_score": 69.2,
+    "hallucinated_quotes_total": 0,
+    "fairness": {
+      "groups": 9,
+      "max_score_spread": 16.7,
+      "mean_score_spread": 3.42,
+      "decision_flips": 0
+    },
+    "label": "Identity-biased model (-0.25 on identity cues) + blind mode OFF",
+    "group": "blind"
+  }
+]

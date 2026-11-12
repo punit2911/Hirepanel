@@ -1,0 +1,30 @@
+# Render Blueprint: New > Blueprint > pick your GitHub repo. Free plans change over time, check render.com/pricing.
+# Free web services sleep when idle and have no disk, so use a free Postgres (Neon or Supabase) for DATABASE_URL.
+services:
+  - type: web
+    name: hirepanel
+    runtime: docker
+    plan: free
+    healthCheckPath: /readyz
+    autoDeploy: true
+    envVars:
+      - key: ENV
+        value: production
+      - key: API_KEY
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: N8N_WEBHOOK_URL
+        sync: false
+      - key: DISCORD_WEBHOOK_URL
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: RETENTION_DAYS
+        value: "30"

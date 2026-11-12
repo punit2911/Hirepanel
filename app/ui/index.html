@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HirePanel</title>
+<meta name="description" content="Screen resumes with a panel of AI agents that must show their evidence.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232547d0'/%3E%3Ccircle cx='11' cy='16' r='4.5' fill='none' stroke='white' stroke-width='2.2'/%3E%3Cpath d='M18 11.5l5 4.5-5 4.5z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2f4f1; --surface:#ffffff; --ink:#15202b; --muted:#566370; --line:#d5dad6; --wash:#e8ece8;
+  --cobalt:#2547d0; --cobalt-ink:#1b36a3; --saffron:#e5a100; --saffron-ink:#8a5a00; --plum:#8e3b63;
+  --focus:#2547d0;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161b; --surface:#192027; --ink:#e8ecef; --muted:#9aa6b0; --line:#2b343c; --wash:#222b33;
+    --cobalt:#7f98ff; --cobalt-ink:#a9baff; --saffron:#f2b73d; --saffron-ink:#f2b73d; --plum:#dd90b4; --focus:#a9baff;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+a{color:var(--cobalt-ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.bar{border-bottom:1px solid var(--line);background:var(--surface)}
+.bar .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.brand{font:400 26px/1 var(--serif);text-decoration:none;color:var(--ink);letter-spacing:.2px}
+.brand i{font-style:italic;color:var(--cobalt-ink)}
+.spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.chip:hover{border-color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cobalt);display:inline-block}
+.dot.off{background:var(--saffron)}
+main{padding:32px 0 96px}
+.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;display:inline-block}
+h1{font:400 44px/1.08 var(--serif);letter-spacing:-.2px}
+h2{font:600 17px/1.3 var(--sans);margin-bottom:10px}
+h3{font:600 15px/1.3 var(--sans)}
+.lede{color:var(--muted);max-width:62ch;margin-top:10px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.sec{margin-top:44px}
+.rule{border:0;border-top:1px solid var(--line);margin:0}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:6px;padding:9px 16px;font-weight:500;cursor:pointer}
+.btn:hover{opacity:.9}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.blue{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.btn.danger{background:transparent;color:var(--plum);border-color:var(--plum)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=number],input[type=password],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:9px 11px}
+textarea{min-height:200px;resize:vertical}
+label.f{display:block;font-weight:500;margin-bottom:14px}
+label.f>span{display:block;margin-bottom:5px}
+
+/* jobs */
+.split{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start}
+.joblist a.job{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.joblist a.job:first-child{border-top:1px solid var(--line)}
+.joblist a.job:hover h3{text-decoration:underline}
+.empty{border:1px dashed var(--muted);border-radius:8px;padding:28px;color:var(--muted)}
+
+/* decision marks: shape + words, never colour alone */
+.pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:3px 11px 3px 9px;font-size:13px;font-weight:600;border:1.5px solid currentColor;white-space:nowrap}
+.pill svg{width:12px;height:12px}
+.pill.shortlist{color:var(--cobalt-ink)}
+.pill.human_review{color:var(--saffron-ink)}
+.pill.reject{color:var(--plum)}
+.pill.pending{color:var(--muted);border-style:dashed}
+
+/* ranking */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}
+.filters button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 14px;cursor:pointer;color:var(--muted)}
+.filters button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cand{display:grid;grid-template-columns:76px 1fr auto;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.cand:first-of-type{border-top:1px solid var(--line)}
+.cand:hover .nm{text-decoration:underline}
+.num{font:400 44px/1 var(--serif);font-variant-numeric:tabular-nums;text-align:right}
+.num small{font:400 14px var(--sans);color:var(--muted)}
+.nm{font-weight:600}
+.meta{font-size:13px;color:var(--muted)}
+.meter{display:inline-block;width:56px;height:5px;background:var(--wash);border-radius:3px;vertical-align:middle;margin-left:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ink)}
+
+/* drop zone */
+.drop{display:block;border:1.5px dashed var(--muted);border-radius:8px;padding:26px;text-align:center;cursor:pointer;color:var(--muted)}
+.drop:hover,.drop.over{border-color:var(--cobalt);color:var(--ink);background:var(--wash)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+
+/* requirements editor */
+.reqs li{list-style:none;display:grid;grid-template-columns:136px 1fr auto;gap:10px;margin-bottom:8px;align-items:center}
+.reqs{padding:0;margin:0 0 14px}
+details>summary{cursor:pointer;font-weight:600;padding:6px 0}
+.flagnote{border-left:3px solid var(--saffron);padding:4px 0 4px 12px;margin:8px 0;color:var(--muted);font-size:14px}
+
+/* candidate */
+.head{display:flex;gap:24px;justify-content:space-between;flex-wrap:wrap;align-items:flex-end}
+.scoreblock{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;margin-top:28px}
+.big{font:400 112px/0.9 var(--serif);font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.big small{font:400 22px var(--sans);color:var(--muted);letter-spacing:0}
+.gauge{position:relative;height:34px;margin:6px 0 4px}
+.gauge .base{position:absolute;left:0;right:0;top:15px;height:4px;background:var(--wash);border-radius:2px}
+.gauge .band{position:absolute;top:11px;height:12px;background:color-mix(in srgb,var(--saffron) 45%,transparent);border-radius:2px}
+.gauge .pass{position:absolute;top:11px;height:12px;background:color-mix(in srgb,var(--cobalt) 40%,transparent);border-radius:2px}
+.gauge .you{position:absolute;top:2px;width:3px;height:30px;background:var(--ink);transform:translateX(-1px)}
+.gauge-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+ul.plain{margin:6px 0 0;padding-left:18px}
+.callout{border:1.5px solid var(--saffron);border-radius:8px;padding:12px 16px;margin-top:16px}
+.callout.blue{border-color:var(--cobalt)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.actions{margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+
+/* evidence ledger: the one memorable thing */
+.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:2px 0 14px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.led{border-top:1px solid var(--line)}
+.lrow{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1.3fr);gap:28px;padding:16px 0;border-bottom:1px solid var(--line)}
+.lrow .rt{font-weight:500}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:4px;padding:1px 7px;color:var(--muted);margin-left:6px;white-space:nowrap}
+.tag.warn{border-color:var(--saffron-ink);color:var(--saffron-ink)}
+.track{position:relative;height:26px;margin:2px 10px 0 0}
+.track:before{content:"";position:absolute;left:0;right:0;top:12px;height:2px;background:var(--wash)}
+.track .tick{position:absolute;top:8px;width:1px;height:10px;background:var(--line)}
+.mk{position:absolute;top:4px;width:18px;height:18px;margin-left:-9px;left:var(--x);transition:left .7s cubic-bezier(.2,.8,.2,1)}
+.mk.a{border:2px solid var(--ink);border-radius:50%;background:var(--surface)}
+.mk.b{border:2px solid var(--ink);border-radius:3px;background:var(--surface)}
+.mk.f{background:var(--cobalt);transform:rotate(45deg) scale(.78);border-radius:2px;z-index:2}
+.bridge{position:absolute;top:11px;height:4px;background:var(--saffron);border-radius:2px;left:var(--x);width:var(--w);transition:all .7s cubic-bezier(.2,.8,.2,1)}
+.track.pre .mk{left:0}
+.track.pre .bridge{width:0}
+.quote{font:italic 400 16px/1.4 var(--serif);margin-top:8px;color:var(--ink)}
+.quote.none{color:var(--muted);font-style:normal;font:400 13px var(--sans)}
+.why{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* trace */
+.wf{border-top:1px solid var(--line)}
+.wfr{display:grid;grid-template-columns:130px 1fr 64px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.wfb{position:relative;height:12px}
+.wfb i{position:absolute;top:0;height:12px;min-width:3px;border-radius:2px;background:var(--muted)}
+.wfb i.llm{background:var(--cobalt)}
+.wfb i.heuristic{background:repeating-linear-gradient(45deg,var(--saffron),var(--saffron) 3px,transparent 3px,transparent 6px);border:1px solid var(--saffron)}
+.wfb i.failed{background:var(--plum)}
+.wfr .md{color:var(--muted);text-align:right}
+
+pre.mail{white-space:pre-wrap;font:14px/1.55 var(--sans);background:var(--wash);border-radius:6px;padding:14px;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:8px;font-size:14px;max-width:90vw;z-index:9;display:none}
+.toast.err{background:var(--plum);color:#fff}
+.toast.show{display:block}
+.pop{position:absolute;right:16px;top:60px;width:min(360px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;z-index:5;box-shadow:0 8px 28px rgba(0,0,0,.14)}
+.pop li{margin:4px 0}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--cobalt);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (max-width:860px){
+  h1{font-size:34px}
+  .split,.cols{grid-template-columns:1fr;gap:32px}
+  .scoreblock{grid-template-columns:1fr;gap:16px}
+  .big{font-size:88px}
+  .lrow{grid-template-columns:1fr;gap:8px}
+  .cand{grid-template-columns:60px 1fr;}
+  .cand .right{grid-column:1/-1}
+  .reqs li{grid-template-columns:1fr auto}
+  .reqs li select{grid-column:1/-1}
+  .wfr{grid-template-columns:96px 1fr 52px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="#/" aria-label="HirePanel home">Hire<i>Panel</i></a>
+  <span class="spacer"></span>
+  <button class="chip" id="statusBtn" aria-haspopup="dialog" aria-expanded="false"><span class="dot off" id="statusDot"></span><span id="statusTxt">Checking</span></button>
+</div></header>
+<main><div class="wrap" id="app"></div></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+/* ------------------------------------------------------------ helpers */
+const h=(t,a={},...c)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a||{})){if(k==='class')e.className=v;else if(k.startsWith('on')&&typeof v==='function')e.addEventListener(k.slice(2),v);else if(v===true)e.setAttribute(k,'');else if(v!==false&&v!=null)e.setAttribute(k,v)}for(const x of c.flat(9))if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(String(x)));return e};
+const svg=(d,vb='0 0 12 12')=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox',vb);s.setAttribute('aria-hidden','true');s.innerHTML=d;return s};
+const $app=document.getElementById('app');
+const mount=(...n)=>{$app.replaceChildren(...n.flat());window.scrollTo(0,0)};
+let toastT;const toast=(m,err=false)=>{const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',err?6000:3200)};
+const store={get(k){try{return sessionStorage.getItem(k)}catch{return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch{}}};
+const fmtDate=s=>{try{return new Date(s).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}catch{return s}};
+const pct=x=>Math.round(x*100);
+let pollTimer=null;const stopPoll=()=>{clearInterval(pollTimer);pollTimer=null};
+
+async function api(path,opt={}){
+  const headers={...(opt.headers||{})};
+  const key=store.get('hp_key');if(key)headers['x-api-key']=key;
+  if(opt.json!==undefined){headers['content-type']='application/json';opt.body=JSON.stringify(opt.json)}
+  let r;try{r=await fetch('/api'+path,{method:opt.method||'GET',headers,body:opt.body})}catch{throw new Error('Cannot reach the server. Check your connection.')}
+  if(r.status===401){askKey();throw new Error('Enter your access key to continue.')}
+  if(!r.ok){let m='Something went wrong';try{const j=await r.json();m=typeof j.detail==='string'?j.detail:(j.detail?.[0]?.msg||m)}catch{}throw new Error(m)}
+  if((r.headers.get('content-type')||'').includes('text/csv'))return r.text();
+  return r.json();
+}
+function askKey(){
+  const inp=h('input',{type:'password',id:'k',autocomplete:'current-password',placeholder:'Access key'});
+  mount(h('div',{style:'max-width:420px;margin:60px auto'},h('h1',{},'Enter your access key'),
+    h('p',{class:'lede'},'The administrator set an API key for this workspace. It stays in this browser tab only.'),
+    h('form',{style:'margin-top:22px',onsubmit:e=>{e.preventDefault();store.set('hp_key',inp.value.trim());route()}},
+      h('label',{class:'f'},h('span',{},'Access key'),inp),h('button',{class:'btn blue',type:'submit'},'Unlock'))));
+  inp.focus();
+}
+const DEC={shortlist:{t:'Shortlist',s:'<circle cx="6" cy="6" r="5" fill="currentColor"/>'},
+  human_review:{t:'Needs your review',s:'<circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 1.8a4.2 4.2 0 0 1 0 8.4z" fill="currentColor"/>'},
+  reject:{t:'Not a fit',s:'<circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>'}};
+const pill=(d,pending)=>{if(pending)return h('span',{class:'pill pending'},h('span',{class:'spin'}),'Scoring');const x=DEC[d]||{t:'Unknown',s:''};return h('span',{class:'pill '+d},svg(x.s),x.t)};
+
+/* ------------------------------------------------------------ status chip */
+async function refreshStatus(){
+  try{const s=await api('/status');
+    document.getElementById('statusDot').className='dot'+(s.offline_mode?' off':'');
+    document.getElementById('statusTxt').textContent=s.offline_mode?'Offline rules':s.providers.map(p=>p.name).join(' + ');
+    window.__status=s;
+  }catch{document.getElementById('statusTxt').textContent='No connection'}
+}
+document.getElementById('statusBtn').addEventListener('click',e=>{
+  const old=document.getElementById('pop');if(old){old.remove();e.currentTarget.setAttribute('aria-expanded','false');return}
+  const s=window.__status;if(!s)return;
+  e.currentTarget.setAttribute('aria-expanded','true');
+  document.body.append(h('div',{class:'pop',id:'pop',role:'dialog','aria-label':'System status'},
+    h('h3',{},s.offline_mode?'Running on built-in rules':'AI models connected'),
+    h('p',{class:'small muted',style:'margin:6px 0 10px'},s.offline_mode?'No API key is set, so scoring uses the offline rule engine. Add a free Gemini or Groq key to switch the panel to real language models.':'Free-tier calls left today are counted by this server.'),
+    h('ul',{class:'small',style:'padding-left:18px;margin:0'},
+      s.providers.map(p=>h('li',{},`${p.name}: ${p.model||'auto model'}${p.calls_left_today!=null?`, ${p.calls_left_today} calls left today`:''}`)),
+      h('li',{},`Blind screening is ${s.blind_mode?'on':'off'}`),
+      h('li',{},`Shortlist threshold ${s.threshold}, review band ${s.review_band}`),
+      h('li',{},`Notifications: ${[s.notifications.n8n&&'n8n',s.notifications.discord&&'Discord'].filter(Boolean).join(', ')||'none connected'}`))));
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('pop')?.remove()}});
+
+/* ------------------------------------------------------------ router */
+function route(){
+  stopPoll();document.getElementById('pop')?.remove();
+  const p=(location.hash||'#/').slice(1).split('/').filter(Boolean);
+  const run=p[0]==='job'&&p[1]?viewJob(p[1]):p[0]==='candidate'&&p[1]?viewCandidate(p[1]):viewJobs();
+  Promise.resolve(run).catch(e=>{if(!/access key/.test(e.message))mount(h('div',{class:'empty'},h('h2',{},'We could not load this page'),h('p',{},e.message),h('p',{style:'margin-top:12px'},h('a',{href:'#/'},'Back to jobs'))))});
+  refreshStatus();
+}
+window.addEventListener('hashchange',route);
+
+/* ------------------------------------------------------------ jobs view */
+async function viewJobs(){
+  const [pub,jobs]=await Promise.all([fetch('/api/public').then(r=>r.json()),api('/jobs')]);
+  if(pub.auth_required&&!store.get('hp_key'))return askKey();
+  const title=h('input',{type:'text',id:'t',maxlength:200,placeholder:'e.g. Senior ML Engineer',required:true});
+  const desc=h('textarea',{id:'d',placeholder:'Paste the full job description here',required:true,minlength:30});
+  const btn=h('button',{class:'btn blue',type:'submit'},'Analyze job description');
+  const form=h('form',{onsubmit:async e=>{e.preventDefault();btn.disabled=true;btn.textContent='Analyzing';
+      try{const j=await api('/jobs',{method:'POST',json:{title:title.value,description:desc.value}});location.hash='#/job/'+j.id}
+      catch(err){toast(err.message,true);btn.disabled=false;btn.textContent='Analyze job description'}}},
+    h('label',{class:'f'},h('span',{},'Job title'),title),h('label',{class:'f'},h('span',{},'Job description'),desc),btn);
+  mount(
+    h('h1',{},'Screen resumes with a panel that must show its evidence'),
+    h('p',{class:'lede'},'Several agents read each resume separately, argue about the score, and quote the exact line behind every point. You decide. Nothing is sent to a candidate until you approve it.'),
+    h('div',{class:'sec split'},
+      h('section',{},h('h2',{},'Your jobs'),
+        jobs.length?h('div',{class:'joblist'},jobs.map(j=>h('a',{class:'job',href:'#/job/'+j.id},
+          h('div',{},h('h3',{},j.title),h('div',{class:'meta'},'Created '+fmtDate(j.created_at))),
+          h('div',{class:'meta'},j.candidates+(j.candidates===1?' candidate':' candidates'))))):
+        h('div',{class:'empty'},h('p',{},'No jobs yet. Paste a job description on the right and the panel will turn it into requirements you can edit.'))),
+      h('section',{},h('h2',{},'New job'),form)));
+}
+
+/* ------------------------------------------------------------ job view */
+async function viewJob(id){
+  const job=await api('/jobs/'+id);
+  let filter='all',cands=[];
+  const list=h('div');const counts=h('div',{class:'filters',role:'group','aria-label':'Filter candidates'});
+  const reqBox=h('div');
+  renderReqs();
+  function renderReqs(){
+    const spec=job.spec;const items=spec.requirements.filter(r=>!r.computed).map(r=>({text:r.text,kind:r.kind,groups:r.groups,orig:r.text}));
+    let minYears=spec.min_years||0;
+    const ul=h('ul',{class:'reqs'});
+    const draw=()=>{ul.replaceChildren(...items.map((it,i)=>h('li',{},
+      h('select',{'aria-label':'Requirement type',onchange:e=>it.kind=e.target.value},h('option',{value:'must',selected:it.kind==='must'},'Must have'),h('option',{value:'nice',selected:it.kind==='nice'},'Nice to have')),
+      h('input',{type:'text',value:it.text,maxlength:300,'aria-label':'Requirement',oninput:e=>it.text=e.target.value}),
+      h('button',{class:'btn ghost',type:'button','aria-label':'Remove requirement',onclick:()=>{items.splice(i,1);draw()}},'Remove'))))};
+    draw();
+    const yrs=h('input',{type:'number',min:0,max:40,step:0.5,value:minYears,style:'width:90px',oninput:e=>minYears=parseFloat(e.target.value)||0});
+    const flags=(spec.jd_flags||[]).map(f=>h('div',{class:'flagnote'},h('strong',{},'Inclusive language: '),f.text,f.suggestion?' '+f.suggestion:''));
+    reqBox.replaceChildren(h('details',{open:!cands.length},
+      h('summary',{},`Requirements the panel will check (${items.length+(minYears?1:0)})`),
+      h('p',{class:'small muted',style:'margin:4px 0 12px'},'Edit these before uploading resumes. Years of experience are calculated from resume dates, not guessed.'),
+      h('label',{class:'row small',style:'margin-bottom:12px'},'Minimum years of experience',yrs),ul,
+      h('div',{class:'row'},
+        h('button',{class:'btn ghost',type:'button',onclick:()=>{items.push({text:'',kind:'must',groups:[]});draw()}},'Add requirement'),
+        h('button',{class:'btn',type:'button',onclick:async()=>{
+          const reqs=items.filter(i=>i.text.trim().length>1).map(i=>({text:i.text.trim(),kind:i.kind,groups:i.text===i.orig?i.groups:[]}));
+          if(!reqs.length)return toast('Add at least one requirement.',true);
+          try{job.spec=(await api('/jobs/'+id+'/spec',{method:'PUT',json:{min_years:minYears,requirements:reqs}})).spec;toast('Requirements saved.');renderReqs();
+            if(cands.some(c=>c.status==='done')&&confirm('Score the existing candidates again with the new requirements?')){await api('/jobs/'+id+'/rescore',{method:'POST'});load()}}
+          catch(e){toast(e.message,true)}}},'Save requirements')),
+      flags));
+  }
+  const drop=h('label',{class:'drop'},h('input',{type:'file',multiple:true,accept:'.pdf,.docx,.txt,.md','aria-label':'Upload resumes'}),
+    h('strong',{},'Drop resumes here or click to choose'),h('div',{class:'small'},'PDF, DOCX or TXT, up to 25 files'));
+  const fi=drop.querySelector('input');
+  const send=async files=>{if(!files.length)return;const fd=new FormData();[...files].forEach(f=>fd.append('files',f));
+    try{const r=await api('/jobs/'+id+'/candidates',{method:'POST',body:fd});
+      if(r.rejected.length)toast(r.rejected.map(x=>`${x.filename}: ${x.error}`).join(' | '),true);else toast(`${r.accepted.length} resume(s) added. Scoring now.`);
+      load()}catch(e){toast(e.message,true)}};
+  fi.addEventListener('change',()=>{send(fi.files);fi.value=''});
+  ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+  drop.addEventListener('drop',e=>send(e.dataTransfer.files));
+  const pn=h('input',{type:'text',maxlength:120,placeholder:'Candidate name (optional)'}),pt=h('textarea',{placeholder:'Paste resume text',style:'min-height:150px'});
+  const paste=h('details',{style:'margin-top:12px'},h('summary',{},'Paste resume text instead'),h('div',{style:'margin-top:10px'},pn,h('div',{style:'height:8px'}),pt,h('div',{style:'height:10px'}),
+    h('button',{class:'btn',type:'button',onclick:async()=>{try{await api('/jobs/'+id+'/candidates/text',{method:'POST',json:{text:pt.value,name:pn.value}});pt.value='';pn.value='';toast('Resume added. Scoring now.');load()}catch(e){toast(e.message,true)}}},'Add resume')));
+
+  function drawList(){
+    const by=d=>cands.filter(c=>c.status==='done'&&c.decision===d).length;
+    const defs=[['all','All',cands.length],['shortlist','Shortlist',by('shortlist')],['human_review','Needs review',by('human_review')],['reject','Not a fit',by('reject')]];
+    counts.replaceChildren(...defs.map(([k,l,n])=>h('button',{type:'button','aria-pressed':String(filter===k),onclick:()=>{filter=k;drawList()}},`${l} ${n}`)));
+    const shown=cands.filter(c=>filter==='all'||c.decision===filter);
+    list.replaceChildren(...(shown.length?shown.map(rowFor):[h('div',{class:'empty',style:'margin-top:12px'},cands.length?'No candidates match this filter.':'No resumes yet. Add some above and the panel will start scoring.')]));
+  }
+  function rowFor(c){
+    const pend=c.status==='queued'||c.status==='processing';
+    if(c.status==='failed')return h('div',{class:'cand'},h('div',{class:'num muted'},'!'),h('div',{},h('div',{class:'nm'},c.name||c.filename),h('div',{class:'meta'},c.error||'Scoring failed')),
+      h('div',{class:'right row'},h('button',{class:'btn ghost',onclick:async()=>{await api('/candidates/'+c.id+'/retry',{method:'POST'});load()}},'Retry')));
+    return h('a',{class:'cand',href:'#/candidate/'+c.id},
+      h('div',{class:'num'},pend?h('span',{class:'spin'}):Math.round(c.score),pend?null:h('small',{},'/100')),
+      h('div',{},h('div',{class:'nm'},c.name||c.filename),
+        h('div',{class:'meta'},pend?'Agents are reading this resume':[c.filename,c.human_action?humanLabel(c.human_action):null].filter(Boolean).join(', '))),
+      h('div',{class:'right row'},c.shield_risk>=0.6?h('span',{class:'tag warn'},'Possible manipulation'):null,
+        c.status==='done'?h('span',{class:'meta'},'Confidence',h('span',{class:'meter',role:'img','aria-label':pct(c.confidence)+' percent'},h('i',{style:`width:${pct(c.confidence)}%`}))):null,pill(c.decision,pend)));
+  }
+  async function load(){
+    try{cands=await api('/jobs/'+id+'/candidates');drawList();
+      stopPoll();if(cands.some(c=>c.status==='queued'||c.status==='processing'))pollTimer=setInterval(async()=>{try{cands=await api('/jobs/'+id+'/candidates');drawList();if(!cands.some(c=>c.status==='queued'||c.status==='processing')){stopPoll()}}catch{}},1800)}
+    catch(e){toast(e.message,true)}}
+  mount(h('a',{class:'crumb',href:'#/'},'All jobs'),h('h1',{},job.title),
+    h('div',{class:'sec',style:'margin-top:24px'},reqBox),
+    h('section',{class:'sec',style:'margin-top:28px'},h('h2',{},'Add resumes'),drop,paste),
+    h('section',{class:'sec'},h('div',{class:'row',style:'justify-content:space-between'},h('h2',{style:'margin:0'},'Ranked candidates'),
+      h('button',{class:'btn ghost',onclick:async()=>{try{const t=await api('/jobs/'+id+'/export.csv');const a=h('a',{href:URL.createObjectURL(new Blob([t],{type:'text/csv'})),download:'candidates.csv'});document.body.append(a);a.click();a.remove()}catch(e){toast(e.message,true)}}},'Export CSV')),
+      counts,list));
+  await load();
+}
+const humanLabel=a=>({approve_shortlist:'You approved the shortlist',approve_reject:'You approved the rejection',hold:'On hold'}[a]||a);
+
+/* ------------------------------------------------------------ candidate view */
+async function viewCandidate(id){
+  const [c,st]=await Promise.all([api('/candidates/'+id),api('/status')]);
+  const r=c.result;
+  const back=h('a',{class:'crumb',href:'#/job/'+c.job_id},'Back to ranking');
+  if(c.status!=='done'||!r){
+    mount(back,h('h1',{},c.filename),h('p',{class:'lede'},c.status==='failed'?c.error:'The agents are still reading this resume. This page will refresh itself.'));
+    if(c.status!=='failed')pollTimer=setInterval(()=>viewCandidate(id),2000);return}
+  const name=c.contact?.name||c.filename;
+  const thr=st.threshold,band=st.review_band;
+  const decision=r.decision;
+
+  /* review actions */
+  const note=h('textarea',{style:'min-height:70px',maxlength:2000,placeholder:'Optional note for the audit trail'});
+  const mailBox=h('div');
+  const act=async(a)=>{try{const out=await api('/candidates/'+id+'/review',{method:'POST',json:{action:a,note:note.value}});
+      toast(a==='hold'?'Marked as on hold.':'Decision recorded.');
+      if(out.email){mailBox.replaceChildren(h('h3',{style:'margin-top:18px'},'Email to send to the candidate'),
+        h('p',{class:'small muted'},out.email_status==='ok'?'Handed to your n8n workflow for sending.':out.email_status?'The n8n hand-off failed ('+out.email_status+'). Copy the draft below.':'No n8n connected, so copy the draft below.'),
+        h('p',{class:'small'},'To: '+(out.email.to||'(no email found on the resume)')),h('pre',{class:'mail'},out.email.subject+'\n\n'+out.email.body),
+        h('div',{class:'row'},h('button',{class:'btn ghost',onclick:()=>navigator.clipboard?.writeText(out.email.body).then(()=>toast('Copied.'))},'Copy text'),
+          out.email.to?h('a',{class:'btn ghost',style:'text-decoration:none',href:'mailto:'+encodeURIComponent(out.email.to)+'?subject='+encodeURIComponent(out.email.subject)+'&body='+encodeURIComponent(out.email.body)},'Open in mail app'):null))}
+    }catch(e){toast(e.message,true)}};
+  const actions=h('div',{class:'actions'},h('h2',{},c.human_action?humanLabel(c.human_action):'Your decision'),
+    h('p',{class:'small muted',style:'margin-bottom:12px'},'The panel only recommends. Nothing is sent until you approve.'),note,h('div',{class:'row',style:'margin-top:12px'},
+      h('button',{class:'btn blue',onclick:()=>act('approve_shortlist')},'Approve shortlist'),
+      h('button',{class:'btn ghost',onclick:()=>act('approve_reject')},'Approve rejection'),
+      h('button',{class:'btn ghost',onclick:()=>act('hold')},'Put on hold')),mailBox);
+
+  /* gauge */
+  const gauge=h('div',{role:'img','aria-label':`Score ${r.score} out of 100. Shortlist from ${thr}. Review zone from ${thr-band}.`},
+    h('div',{class:'gauge'},h('div',{class:'base'}),h('div',{class:'band',style:`left:${thr-band}%;width:${band}%`}),h('div',{class:'pass',style:`left:${thr}%;width:${100-thr}%`}),h('div',{class:'you',style:`left:${r.score}%`})),
+    h('div',{class:'gauge-l'},h('span',{},'0'),h('span',{},`Review zone starts at ${thr-band}`),h('span',{},`Shortlist at ${thr}`),h('span',{},'100')));
+
+  /* evidence ledger */
+  const tracks=[];
+  const ledger=h('div',{class:'led'},r.rows.map(row=>{
+    const computed=row.resolved_by==='computed';
+    const t=h('div',{class:'track pre',role:'img','aria-label':computed?`Final ${row.final}`:`Evidence Auditor ${row.score_a}, Potential Assessor ${row.score_b}, final ${row.final}`});
+    [0,.25,.5,.75,1].forEach(x=>t.append(h('i',{class:'tick',style:`left:${x*100}%`})));
+    const set=[];
+    if(!computed){const a=row.score_a,b=row.score_b;
+      if(row.disputed||Math.abs(a-b)>.001){const lo=Math.min(a,b),hi=Math.max(a,b);const br=h('i',{class:'bridge'});t.append(br);set.push(()=>{br.style.setProperty('--x',lo*100+'%');br.style.setProperty('--w',(hi-lo)*100+'%')})}
+      const A=h('i',{class:'mk a',title:'Evidence Auditor '+a}),B=h('i',{class:'mk b',title:'Potential Assessor '+b});t.append(A,B);set.push(()=>{A.style.setProperty('--x',a*100+'%');B.style.setProperty('--x',b*100+'%')})}
+    const F=h('i',{class:'mk f',title:'Final '+row.final});t.append(F);set.push(()=>F.style.setProperty('--x',row.final*100+'%'));
+    tracks.push([t,set]);
+    const notes=[];
+    if(row.disputed)notes.push(row.resolved_by==='adjudicator'?'The assessors disagreed. A tie-break settled it.':'The assessors disagreed. The lower score was used.');
+    if(row.capped.includes('listed_only'))notes.push('Only found in a skills list, with no work shown, so the score is capped.');
+    if(row.capped.includes('copied_from_job_description'))notes.push('This text is copied from the job description, so it does not count as evidence.');
+    if(row.capped.includes('quote_not_found'))notes.push('The quoted text is not in the resume, so credit was removed.');
+    if(row.capped.includes('quote_off_topic'))notes.push('The quote does not mention this skill, so the score was capped.');
+    if(row.capped.includes('no_quote'))notes.push('No supporting quote was given, so the score was capped.');
+    return h('div',{class:'lrow'},
+      h('div',{},h('div',{class:'rt'},row.text,h('span',{class:'tag'},row.kind==='must'?'Must have':'Nice to have')),
+        h('div',{class:'why'},[...notes].join(' ')||(computed?'Calculated from the dates on the resume.':'')),),
+      h('div',{},t,row.evidence?h('div',{class:'quote'},'“'+row.evidence+'”',row.section&&!computed?h('span',{class:'tag'},'from '+row.section):null):h('div',{class:'quote none'},'No supporting text found in the resume.')));
+  }));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>tracks.forEach(([t,set])=>{set.forEach(f=>f());t.classList.remove('pre')})));
+
+  /* trace */
+  const total=Math.max(1,...r.trace.map(s=>s.started_ms+s.duration_ms));
+  const wf=h('div',{class:'wf'},r.trace.map(s=>h('div',{class:'wfr'},h('div',{},s.name.replace(/_/g,' ')),
+    h('div',{class:'wfb',title:(s.notes||[]).join(' | ')},h('i',{class:s.status==='failed'?'failed':s.mode,style:`left:${s.started_ms/total*100}%;width:${Math.max(.8,s.duration_ms/total*100)}%`})),
+    h('div',{class:'md'},s.status==='skipped'?'skipped':(s.duration_ms>=1000?(s.duration_ms/1000).toFixed(1)+' s':s.duration_ms+' ms')))));
+  const traceLegend=h('div',{class:'legend'},h('span',{},h('i',{style:'width:18px;height:10px;background:var(--cobalt);display:inline-block;border-radius:2px'}),'Language model'),
+    h('span',{},h('i',{style:'width:18px;height:10px;border:1px solid var(--saffron);display:inline-block;border-radius:2px;background:repeating-linear-gradient(45deg,var(--saffron),var(--saffron) 3px,transparent 3px,transparent 6px)'}),'Built-in rules'),
+    h('span',{},h('i',{style:'width:18px;height:10px;background:var(--muted);display:inline-block;border-radius:2px'}),'Fixed code'));
+
+  const RL={emails:['email','emails'],links:['link','links'],phones:['phone number','phone numbers'],names:['name mention','name mentions'],pronouns:['pronoun','pronouns'],education_years:['graduation year','graduation years'],titles:['title','titles'],sensitive_fields:['personal detail line','personal detail lines'],institutions:['institution','institutions']};
+  const redacted=Object.entries(r.redaction||{}).map(([k,v])=>`${v} ${(RL[k]||[k.replace(/_/g,' '),k.replace(/_/g,' ')])[v===1?0:1]}`);
+  const scorerCol=(s,title)=>h('div',{},h('h3',{},title+': '+s.score),h('p',{class:'small muted'},`${s.mode==='llm'?'Language model'+(s.provider?' ('+s.provider+')':''):'Built-in rules'}`),
+    h('p',{style:'margin-top:8px'},s.rationale),s.strengths.length?h('ul',{class:'plain small'},s.strengths.map(x=>h('li',{},x))):null,
+    s.gaps.length?h('p',{class:'small muted',style:'margin-top:8px'},'Gaps: '+s.gaps.join('; ')):null);
+
+  mount(back,
+    h('div',{class:'head'},h('div',{},h('h1',{},name),h('p',{class:'meta',style:'margin-top:6px'},c.filename+', scored in '+(c.run_ms/1000).toFixed(1)+' s, '+(r.mode==='llm'?'language models':r.mode==='mixed'?'language models and built-in rules':'built-in rules'))),pill(decision.action)),
+    h('div',{class:'scoreblock'},h('div',{class:'big'},Math.round(r.score),h('small',{},' /100')),
+      h('div',{},gauge,h('p',{class:'small muted'},`Panel confidence ${pct(r.confidence)}%. ${decision.reasons.join(' ')}`),
+        decision.problems.length?h('div',{class:'callout'},h('strong',{},'Look at this before deciding'),h('ul',{class:'plain'},decision.problems.map(p=>h('li',{},p)))):null)),
+    h('p',{style:'margin-top:24px;max-width:70ch;font-size:16px'},r.recruiter_summary),
+    actions,
+    h('section',{class:'sec'},h('h2',{},'Evidence for every requirement'),
+      h('p',{class:'small muted',style:'max-width:70ch;margin-bottom:12px'},'Two assessors score each requirement independently, then a checker confirms the quoted text really exists in the resume. Where they disagree, the gap is highlighted.'),
+      h('div',{class:'legend'},h('span',{},h('i',{class:'mk a',style:'position:static;display:inline-block;margin:0;width:14px;height:14px'}),'Evidence Auditor (strict)'),
+        h('span',{},h('i',{class:'mk b',style:'position:static;display:inline-block;margin:0;width:14px;height:14px'}),'Potential Assessor (generous)'),
+        h('span',{},h('i',{class:'mk f',style:'position:static;display:inline-block;margin:0;width:14px;height:14px;transform:rotate(45deg) scale(.8)'}),'Final score'),
+        h('span',{},'Track runs from 0 to 1')),ledger),
+    h('section',{class:'sec cols'},h('div',{},h('h2',{},'Two opinions'),h('div',{style:'display:grid;gap:22px'},scorerCol(r.scorer_a,'Evidence Auditor'),scorerCol(r.scorer_b,'Potential Assessor'))),
+      h('div',{},h('h2',{},'Safety checks'),
+        h('p',{},h('strong',{},'Blind screening. '),redacted.length?'Hidden from the panel: '+redacted.join(', ')+'.':'Nothing needed hiding, or blind mode is off.'),
+        h('p',{style:'margin-top:10px'},h('strong',{},'Manipulation check. '),r.shield.level==='low'&&!r.shield.flags.length?'No hidden instructions or keyword stuffing found.':`Risk level ${r.shield.level}.`),
+        r.shield.flags.length?h('ul',{class:'plain small'},r.shield.flags.map(f=>h('li',{},f.type.replace(/_/g,' ')+(f.text?': '+f.text:'')))):null,
+        h('p',{style:'margin-top:10px'},h('strong',{},'Bias audit. '),r.bias.flags.length?`${r.bias.flags.length} item(s) found in the AI's own writing${r.bias.scrubbed?' and cleaned up':''}.`:'The AI wrote nothing about protected characteristics.'),
+        r.bias.flags.length?h('ul',{class:'plain small'},r.bias.flags.map(f=>h('li',{},f.type.replace(/_/g,' ')+': '+f.text))):null,
+        h('p',{style:'margin-top:10px'},h('strong',{},'Quote check. '),r.hallucinated_quotes?`${r.hallucinated_quotes} quoted line(s) were not in the resume and lost their credit.`:'Every quoted line was found in the resume.'),
+        r.adjudication.disputed.length?h('p',{style:'margin-top:10px'},h('strong',{},'Disagreements. '),`${r.adjudication.disputed.length} requirement(s). ${r.adjudication.used_llm?'A tie-break model settled them.':'The lower score was used.'}`):null)),
+    h('section',{class:'sec'},h('h2',{},'How the panel worked'),traceLegend,wf),
+    r.interview_kit.length?h('section',{class:'sec'},h('h2',{},'Interview questions aimed at the gaps'),
+      h('div',{style:'display:grid;gap:16px;max-width:75ch'},r.interview_kit.map(q=>h('div',{},h('p',{style:'font-weight:500'},q.question),
+        h('p',{class:'small muted'},'Good signs: '+q.good_signals),h('p',{class:'small muted'},'Watch for: '+q.red_flags))))):null,
+    h('section',{class:'sec'},h('details',{},h('summary',{},'Draft emails'),
+      ['shortlist','reject'].map(k=>r.drafts[k]?h('div',{style:'margin-top:12px'},h('h3',{},k==='shortlist'?'If you shortlist':'If you reject'),h('pre',{class:'mail'},r.drafts[k].subject+'\n\n'+r.drafts[k].body)):null))),
+    h('section',{class:'sec'},h('details',{},h('summary',{},'Audit trail'),
+      h('ul',{class:'plain small'},(c.audit||[]).map(a=>h('li',{},`${new Date(a.ts).toLocaleString()}: ${a.actor} ${a.action.replace(/[:_]/g,' ')}${a.detail?' ('+a.detail+')':''}`))))),
+    h('section',{class:'sec'},h('hr',{class:'rule'}),h('div',{class:'row',style:'margin-top:18px'},
+      h('button',{class:'btn danger',onclick:async()=>{if(!confirm('Erase this candidate and all their data? This cannot be undone.'))return;try{await api('/candidates/'+id,{method:'DELETE'});toast('Candidate erased.');location.hash='#/job/'+c.job_id}catch(e){toast(e.message,true)}}},'Erase candidate data'),
+      h('span',{class:'small muted'},'Removes the resume, scores and contact details from this server.'))));
+}
+route();
+</script>
+</body>
+</html>

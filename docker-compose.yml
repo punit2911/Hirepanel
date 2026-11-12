@@ -1,0 +1,35 @@
+# One command starts HirePanel + n8n:   docker compose up --build
+# Needs a .env file first (run: python scripts/setup_env.py)
+services:
+  hirepanel:
+    build: .
+    env_file: .env
+    environment:
+      ENV: production
+      DATA_DIR: /data
+      # Inside the compose network n8n is reachable by its service name.
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://n8n:5678/webhook/hirepanel}
+    ports:
+      - "8000:8000"
+    volumes:
+      - hirepanel-data:/data
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      GENERIC_TIMEZONE: ${TZ:-Asia/Kolkata}
+      TZ: ${TZ:-Asia/Kolkata}
+      # lets the workflow read DISCORD_WEBHOOK_URL / MAIL_FROM below
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+    volumes:
+      - n8n-data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  hirepanel-data:
+  n8n-data:
