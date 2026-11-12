@@ -205,17 +205,6 @@ Send your password as `x-api-key`. In development (`ENV=development`) interactiv
 
 ---
 
-## Talking about this in an interview
-
-Lead with the design decisions, not the tech list:
-
-* **"Trust, don't hope."** Models propose, code verifies. Quotes are checked against the source, arithmetic is done in code, the decision is deterministic.
-* **Disagreement as a signal.** Two lenses on two providers, a tie-break only where they differ, and confidence derived from agreement.
-* **Security of the prompt itself.** The resume is hostile input. Show the attack set and the Shield.
-* **Fairness you can test.** Blind before the model, audit after, and a counterfactual test in CI.
-* **Graceful degradation.** Provider down, quota gone, bad JSON: it falls back and says so in the trace.
-* **Honest limits.** Know and say what the eval set is and is not.
-
 ## Evidence, not claims
 - `docs/RESULTS.md` - 150-resume labelled benchmark + ablations (verifier, shield, dual scorers, blind mode). Reproduce: `python -m evals.ablate`
 - `docs/OLLAMA.md` - run on a local model from zero, then `python scripts/bench_providers.py`
