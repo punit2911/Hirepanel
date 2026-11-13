@@ -55,6 +55,28 @@ Your original flow (parse, score, threshold, shortlist or polite rejection, n8n 
 ![Email sent to the candidate](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png)
 
 
+## Quick start
+
+Needs **Python 3.10 or newer**. Copy and paste these commands into a terminal.
+
+**Mac / Linux**
+```bash
+git clone https://github.com/punit2911/hirepanel.git
+cd hirepanel
+bash scripts/run.sh
+```
+
+**Windows (PowerShell)**
+```powershell
+git clone https://github.com/punit2911/hirepanel.git
+cd hirepanel
+scripts\run.bat
+```
+
+The script installs everything, creates your password, prints it once, and starts the server. Then open **http://localhost:8000**.
+
+Want more detail (free AI keys, demo data, key check)? See the next section.
+
 ## Start here: run it on your computer in 5 minutes
 
 You only need **Python 3.10 or newer**. Check with `python3 --version` (Mac/Linux) or `python --version` (Windows). If missing, install from https://www.python.org/downloads/ (on Windows tick "Add Python to PATH").
