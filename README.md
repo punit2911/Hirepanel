@@ -1,5 +1,7 @@
 # HirePanel
 
+**Screens resumes with evidence-backed scores, blocks prompt-injection tricks, then alerts recruiters on Discord and emails candidates only after human approval.**
+
 A multi-agent resume screening system where **every score must be backed by a real quote from the resume**.
 
 Several specialist agents read each resume separately, disagree on purpose, and a checker throws away any "evidence" that is not actually in the document. A human makes the final call. Nothing is ever sent to a candidate until a recruiter approves it.
@@ -140,6 +142,17 @@ It loads 9 fake candidates, including ones that try to cheat the system.
 | Hard to trust | Automatic **evals** (`python -m evals.run`) including a counterfactual fairness test: the same resume with 7 different names, genders, schools and ages must get the same score. |
 
 ---
+
+## Automation: from resume to Discord alert to candidate email
+
+Scoring is only half the job. HirePanel also closes the loop, with a human in control:
+
+1. **Resume scored.** HirePanel sends a signed event (`candidate_decided`) to n8n.
+2. **Discord alert.** n8n posts the result to your recruiter channel on Discord, so the team sees every new decision without opening the app.
+3. **Human review.** The recruiter opens HirePanel, checks the evidence quotes, and clicks **Approve**.
+4. **Candidate email.** HirePanel sends a second event (`send_candidate_email`). n8n emails the candidate: an interview invite or a polite rejection.
+
+Nothing reaches a candidate until a human approves it. The AI never emails anyone on its own. See the screenshots above for the real n8n workflow, Discord message and email.
 
 ## Connect n8n (the "notify recruiter" box)
 
