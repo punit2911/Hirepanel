@@ -54,11 +54,6 @@ Your original flow (parse, score, threshold, shortlist or polite rejection, n8n 
 
 ![Email sent to the candidate](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png)
 
----|---|---|
-| ![HirePanel screenshot 1](docs/output_Screenshots/Screenshot%202026-11-13%20141718.png) | ![HirePanel screenshot 2](docs/output_Screenshots/Screenshot%202026-11-13%20142137.png) | ![HirePanel screenshot 3](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png) |
-
----
-
 
 ## Start here: run it on your computer in 5 minutes
 
