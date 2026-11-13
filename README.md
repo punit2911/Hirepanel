@@ -22,11 +22,14 @@ flowchart LR
     D -- human review --> C
     D -- reject --> C
     C --> BA[Bias auditor<br/>scrubs the AI's own writing]
-    BA --> H[Recruiter approves]
-    H --> N[n8n: notify recruiter,<br/>email candidate]
+    BA -->|"candidate_decided"| N1["n8n automation"]
+    N1 --> DC["Discord alert<br/>result posted to the recruiter channel"]
+    BA --> H["Recruiter reviews the evidence<br/>and clicks Approve"]
+    H -->|"send_candidate_email"| N2["n8n automation"]
+    N2 --> E["Email to the candidate<br/>interview invite or polite rejection"]
 ```
 
-Your original flow (parse, score, threshold, shortlist or polite rejection, n8n notify) is all there. The extra agents are what make it trustworthy.
+The classic flow (parse, score, threshold, shortlist or polite rejection, notify through n8n) is all there. The extra agents are what make it trustworthy.
 
 ---
 
@@ -56,10 +59,11 @@ Your original flow (parse, score, threshold, shortlist or polite rejection, n8n 
 
 ![Email sent to the candidate](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png)
 
+---
 
 ## Quick start
 
-Needs **Python 3.10 or newer**. Copy and paste these commands into a terminal.
+Needs **Python 3.10 or newer** (check with `python --version`). Copy and paste these commands into a terminal.
 
 **Mac / Linux**
 ```bash
@@ -72,16 +76,18 @@ bash scripts/run.sh
 ```powershell
 git clone https://github.com/punit2911/hirepanel.git
 cd hirepanel
-scripts\run.bat
+.\scripts\run.bat
 ```
 
-The script installs everything, creates your password, prints it once, and starts the server. Then open **http://localhost:8000**.
+The script installs everything, asks for two free AI keys (press Enter to skip), creates your password, prints it once, and starts the server. Then open **http://localhost:8000** and enter the password.
 
-Want more detail (free AI keys, demo data, key check)? See the next section.
+Want to know where to get the free AI keys, or how to load demo data? See **Detailed setup** below.
 
-## Start here: run it on your computer in 5 minutes
+---
 
-You only need **Python 3.10 or newer**. Check with `python3 --version` (Mac/Linux) or `python --version` (Windows). If missing, install from https://www.python.org/downloads/ (on Windows tick "Add Python to PATH").
+## Detailed setup (AI keys, demo data, key check)
+
+If Python is missing, install it from https://www.python.org/downloads/ (on Windows tick "Add Python to PATH").
 
 ### Step 1. Get two free AI keys (optional but recommended)
 
@@ -94,13 +100,14 @@ Using both is best: scorer A and scorer B then run on two different companies' m
 
 ### Step 2. Start it
 
+From the project folder:
+
 **Mac / Linux**
 ```bash
-cd hirepanel
 bash scripts/run.sh
 ```
 
-**Windows**: double-click `scripts\run.bat` (or run it in a terminal).
+**Windows**: double-click `scripts\run.bat` (or run `.\scripts\run.bat` in a terminal).
 
 The script builds a private Python environment, installs everything, asks you to paste the two keys (press Enter to skip), creates your password, and starts the server.
 
@@ -154,6 +161,10 @@ Scoring is only half the job. HirePanel also closes the loop, with a human in co
 
 Nothing reaches a candidate until a human approves it. The AI never emails anyone on its own. See the screenshots above for the real n8n workflow, Discord message and email.
 
+Discord alerts also work without n8n: set only `DISCORD_WEBHOOK_URL` and HirePanel posts to the channel directly.
+
+---
+
 ## Connect n8n (the "notify recruiter" box)
 
 n8n is a free automation tool. HirePanel sends it two kinds of events:
@@ -161,7 +172,7 @@ n8n is a free automation tool. HirePanel sends it two kinds of events:
 * `candidate_decided`: a resume was scored. The workflow posts a message to your Discord channel.
 * `send_candidate_email`: a recruiter clicked **Approve** in HirePanel. The workflow emails the candidate.
 
-**Easiest way** (Docker installed): 
+**Easiest way** (Docker installed):
 ```bash
 python scripts/setup_env.py     # creates .env
 docker compose up --build       # starts HirePanel on :8000 and n8n on :5678
@@ -179,7 +190,7 @@ Don't want n8n yet? Set only `DISCORD_WEBHOOK_URL` and you still get notificatio
 
 Every call from HirePanel to n8n carries an HMAC signature (`x-hirepanel-signature`), and n8n can call back into HirePanel at `POST /api/webhooks/n8n` with header `x-webhook-secret` (for example to record an approval made in a chat button).
 
-> The n8n workflow file is validated for structure, but I could not run n8n itself while building this. Import it and press **Execute workflow** with a test event once to confirm your credentials.
+> **Tip:** after importing the workflow, press **Execute workflow** in n8n with a test event once to confirm your SMTP credentials work.
 
 ---
 
@@ -204,7 +215,7 @@ Free web services sleep after a period of no traffic and take a short while to w
 
 ### Option B: any VPS or your own server
 ```bash
-git clone <your repo> && cd hirepanel
+git clone https://github.com/punit2911/hirepanel.git && cd hirepanel
 python scripts/setup_env.py
 # edit .env: set PUBLIC_BASE_URL to your domain
 docker compose up -d --build
@@ -235,7 +246,7 @@ Be honest about what this is: a **small regression suite written by the author**
 
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest -q            # 54 tests, no network needed
+python -m pytest -q            # unit and API tests, no network needed
 ```
 
 ---
@@ -272,4 +283,4 @@ Send your password as `x-api-key`. In development (`ENV=development`) interactiv
 - `docs/OLLAMA.md` - run on a local model from zero, then `python scripts/bench_providers.py`
 - `docs/ARCHITECTURE.md`, `docs/LIMITATIONS.md`, `docs/INTERVIEW_QA.md`
 
-Benchmark data is synthetic and simulated models are not real models; see the limitations file before quoting any number.
+The benchmark data is synthetic, and some results use simulated models rather than real ones. Read `docs/LIMITATIONS.md` before quoting any number.
