@@ -30,7 +30,7 @@ Your original flow (parse, score, threshold, shortlist or polite rejection, n8n 
 
 ## Demo
 
-[![Watch the 86-second demo](docs/demo/demo-thumb.jpg)](https://github.com/punit2911/hirepanel/raw/main/docs/demo/HirePanel_Demo.mp4)
+[![Watch the demo on YouTube](docs/demo/demo-thumb.jpg)](https://youtu.be/UCSx_n8XTbg)
 
 *Click the picture to watch the 86-second walkthrough: ranking, evidence quotes, attack detection, and the n8n, Discord and email automation.*
 
