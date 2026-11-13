@@ -28,6 +28,38 @@ Your original flow (parse, score, threshold, shortlist or polite rejection, n8n 
 
 ---
 
+## Demo
+
+[![Watch the 86-second demo](docs/demo/demo-thumb.jpg)](docs/demo/HirePanel_Demo.mp4)
+
+*Click the picture to watch the 86-second walkthrough: ranking, evidence quotes, attack detection, and the n8n, Discord and email automation.*
+
+**Live demo:** https://hirepanel.onrender.com/
+
+- The live site is **read-only**, and candidate names are masked. It only holds synthetic demo resumes, no real people.
+- The free host sleeps when idle, so the first load can take up to a minute. Please wait for it.
+- **Want full access** (upload resumes, approve decisions, trigger email and Discord)? Email **punitgavali29@gmail.com** with the subject "HirePanel demo key" and I will send you a secret access key.
+
+### Screenshots (real output from the automation)
+
+**1. n8n workflow**
+
+![n8n workflow](docs/output_Screenshots/Screenshot%202026-11-13%20141718.png)
+
+**2. Discord channel update**
+
+![Discord channel output](docs/output_Screenshots/Screenshot%202026-11-13%20142137.png)
+
+**3. Candidate email sent**
+
+![Email sent to the candidate](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png)
+
+---|---|---|
+| ![HirePanel screenshot 1](docs/output_Screenshots/Screenshot%202026-11-13%20141718.png) | ![HirePanel screenshot 2](docs/output_Screenshots/Screenshot%202026-11-13%20142137.png) | ![HirePanel screenshot 3](docs/output_Screenshots/Screenshot%202026-11-13%20142306.png) |
+
+---
+
+
 ## Start here: run it on your computer in 5 minutes
 
 You only need **Python 3.10 or newer**. Check with `python3 --version` (Mac/Linux) or `python --version` (Windows). If missing, install from https://www.python.org/downloads/ (on Windows tick "Add Python to PATH").
