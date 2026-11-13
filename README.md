@@ -41,7 +41,6 @@ The classic flow (parse, score, threshold, shortlist or polite rejection, notify
 
 **Live demo:** https://hirepanel.onrender.com/
 
-- The live site is **read-only**, and candidate names are masked. It only holds synthetic demo resumes, no real people.
 - The free host sleeps when idle, so the first load can take up to a minute. Please wait for it.
 - **Want full access** (upload resumes, approve decisions, trigger email and Discord)? Email **punitgavali29@gmail.com** with the subject "HirePanel demo key" and I will send you a secret access key.
 
