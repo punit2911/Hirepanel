@@ -197,6 +197,22 @@ It loads 9 fake candidates, including ones that try to cheat the system. It is s
 
 ---
 
+## What the recruiter gets for every candidate
+
+Click a candidate and you see everything needed to decide, in one place:
+
+- **Score, confidence and the AI's recommendation** (shortlist, human review or reject), with the reasons and any problems to check.
+- **An evidence ledger.** For every requirement: the quote from the resume, whether the quote was verified, and which section it came from.
+- **Safety flags** from the shield (hidden instructions, invisible characters, keyword stuffing, text copied from the job description) and the result of the bias check.
+- **A short recruiter summary** written from the verified evidence.
+- **An interview kit.** About four structured questions aimed at the gaps the panel found: three at weakly evidenced requirements and one to test the depth of the strongest claimed skill. Each question comes with the requirement it targets, **good signals** to listen for, and **red flags**. Questions are job-related only and never touch age, family, nationality, religion or health. If no model is available, a built-in template produces them instead.
+- **Draft emails** for an interview invite or a polite rejection, scrubbed by the bias auditor. They are only sent after a recruiter clicks **Approve**.
+- **An audit trail** of every automatic step and every human action.
+
+The same explanation, including the interview questions, is available to an AI assistant through the [MCP server](docs/MCP.md).
+
+---
+
 ## Automation: from resume to Discord alert to candidate email
 
 Scoring is only half the job. HirePanel also closes the loop, with a human in control:
