@@ -141,7 +141,7 @@ class LLMRouter:
         cp = self._cache_path(key)
         if cp and cp.exists():
             try:
-                return model_cls.model_validate_json(cp.read_text()), CallInfo("cache", "cache", 0, True, 0)
+                return model_cls.model_validate_json(cp.read_text(encoding="utf-8")), CallInfo("cache", "cache", 0, True, 0)
             except (ValidationError, ValueError, OSError):
                 pass
 
@@ -153,7 +153,7 @@ class LLMRouter:
                 obj, info = await self._try_provider(name, full_system, user, model_cls, temperature, task)
                 if cp:
                     try:
-                        cp.write_text(obj.model_dump_json())
+                        cp.write_text(obj.model_dump_json(), encoding="utf-8")
                     except OSError:
                         pass
                 return obj, info

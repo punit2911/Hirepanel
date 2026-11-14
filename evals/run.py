@@ -111,8 +111,8 @@ def main() -> None:
     report = asyncio.run(run_all(args.live, args.cases))
     text = render(report)
     print(text)
-    Path(args.out).write_text(text)
-    Path(args.out).with_suffix(".json").write_text(json.dumps(report, indent=2, default=str))
+    Path(args.out).write_text(text, encoding="utf-8")
+    Path(args.out).with_suffix(".json").write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
     sys.exit(0 if report["passed"] else 1)
 
 

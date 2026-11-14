@@ -11,7 +11,7 @@ ENV, EXAMPLE = ROOT / ".env", ROOT / ".env.example"
 
 def read(path: Path) -> dict[str, str]:
     out = {}
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         m = re.match(r"^([A-Z0-9_]+)=(.*)$", line)
         if m:
             out[m.group(1)] = m.group(2).split("  #")[0].strip()
@@ -30,7 +30,7 @@ def ask(label: str, hint: str) -> str:
 
 
 def main() -> None:
-    text = ENV.read_text() if ENV.exists() else EXAMPLE.read_text()
+    text = ENV.read_text(encoding="utf-8") if ENV.exists() else EXAMPLE.read_text(encoding="utf-8")
     current = read(ENV) if ENV.exists() else {}
     if not current.get("API_KEY"):
         key = secrets.token_urlsafe(24)
@@ -46,7 +46,7 @@ def main() -> None:
         v = ask("Groq key (free, no card):", "Get it at https://console.groq.com/keys")
         if v:
             text = set_key(text, "GROQ_API_KEY", v)
-    ENV.write_text(text)
+    ENV.write_text(text, encoding="utf-8")
     print(f"Saved {ENV}")
     final = read(ENV)
     if not (final.get("GEMINI_API_KEY") or final.get("GROQ_API_KEY")):

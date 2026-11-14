@@ -168,3 +168,40 @@ def test_webhook_signature_roundtrip():
     assert verify_signature("secret", body, ts, sig)
     assert not verify_signature("secret", b'{"a":2}', ts, sig)
     assert not verify_signature("secret", body, str(int(time.time()) - 4000), sign("secret", body, str(int(time.time()) - 4000)))
+
+
+@pytest.fixture()
+def demo_client(settings, with_settings):
+    s = with_settings(settings, api_key=KEY, webhook_secret="whsec-test-1234567890", demo_mode=True)
+    with TestClient(create_app(s)) as c:
+        yield c
+
+
+def test_demo_mode_is_read_only_masked_and_owner_keeps_full_access(demo_client):
+    c = demo_client
+    job = c.post("/api/jobs", json={"title": "Senior ML Engineer", "description": JD}, headers=H).json()
+    cid = c.post(f"/api/jobs/{job['id']}/candidates", headers=H,
+                 files=[("files", ("priya.txt", STRONG_STANDARD.encode(), "text/plain"))]).json()["accepted"][0]["id"]
+    wait_done(c, cid)
+    assert c.get("/api/public").json()["demo"] is True
+    # strangers can read
+    assert c.get("/api/jobs").status_code == 200 and c.get("/api/status").status_code == 200
+    rows = c.get(f"/api/jobs/{job['id']}/candidates").json()
+    assert rows and rows[0]["name"] == "P. S."
+    d = c.get(f"/api/candidates/{cid}").json()
+    assert d["contact"] == {"name": "P. S."} and "priya.sharma@example.com" not in str(d)
+    # strangers cannot write, export, review, delete, or use a wrong key
+    assert c.post("/api/jobs", json={"title": "x" * 5, "description": JD}).status_code == 401
+    assert c.get(f"/api/jobs/{job['id']}/export.csv").status_code == 401
+    assert c.post(f"/api/candidates/{cid}/review", json={"action": "approve_shortlist"}).status_code == 401
+    assert c.delete(f"/api/candidates/{cid}").status_code == 401
+    assert c.get("/api/jobs", headers={"x-api-key": "wrong"}).status_code == 401
+    # the owner still sees everything unmasked
+    assert c.get(f"/api/candidates/{cid}", headers=H).json()["contact"]["email"] == "priya.sharma@example.com"
+
+
+def test_demo_mode_off_by_default_and_needs_a_key_to_exist(client, settings, with_settings):
+    assert client.get("/api/public").json()["demo"] is False
+    s = with_settings(settings, api_key="", demo_mode=True)  # no key set means nothing to bypass
+    with TestClient(create_app(s)) as c:
+        assert c.get("/api/public").json()["demo"] is False

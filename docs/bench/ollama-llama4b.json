@@ -1,0 +1,39 @@
+{
+  "provider": "ollama",
+  "summary": {
+    "n_clean": 12,
+    "n_attacks": 6,
+    "auroc_strong_vs_rest": 0.685,
+    "auroc_medium_vs_weak": 0.95,
+    "decision_not_wrong": 0.833,
+    "decision_not_wrong_ci": [
+      0.552,
+      0.953
+    ],
+    "false_shortlist_weak": 0.0,
+    "strong_recall_shortlist_or_review": 1.0,
+    "strong_shortlisted": 0.667,
+    "paraphrase_strong_rejected": 0.0,
+    "auto_decision_coverage": 0.667,
+    "auto_decision_precision": 0.875,
+    "attack_false_shortlist": 0.0,
+    "attack_false_shortlist_count": 0,
+    "attack_flagged": 1.0,
+    "weak_mean_score": 39.9,
+    "strong_mean_score": 73.7,
+    "hallucinated_quotes_total": 0
+  },
+  "llm_stats": {
+    "calls": 6,
+    "ok": 0,
+    "invalid_json": 6,
+    "errors": 0,
+    "failed": 3,
+    "json_valid_rate": 0.0,
+    "latency_p50_ms": 12406,
+    "latency_p95_ms": 27468,
+    "approx_tokens_in": 2699,
+    "approx_tokens_out": 2513
+  },
+  "cases": 18
+}

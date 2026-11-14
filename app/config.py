@@ -92,6 +92,7 @@ class Settings:
     verifier_enabled: bool
     scorer_mode: str  # dual | a | b
     shield_enabled: bool
+    demo_mode: bool  # public read-only view of FAKE data without the API key (writes stay locked)
     # --- notifications ---
     n8n_webhook_url: str
     discord_webhook_url: str
@@ -159,6 +160,7 @@ class Settings:
             verifier_enabled=_bool("VERIFIER_ENABLED", True),
             scorer_mode=_str("SCORER_MODE", "dual").lower() if _str("SCORER_MODE", "dual").lower() in ("dual", "a", "b") else "dual",
             shield_enabled=_bool("SHIELD_ENABLED", True),
+            demo_mode=_bool("DEMO_MODE", False),
             n8n_webhook_url=_str("N8N_WEBHOOK_URL"),
             discord_webhook_url=_str("DISCORD_WEBHOOK_URL"),
             company_name=_str("COMPANY_NAME", "our team"),

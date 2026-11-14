@@ -112,7 +112,7 @@ def main() -> None:
     rows = out.pop("rows")
     out.pop("provider_stats", None)
     Path("evals").mkdir(exist_ok=True)
-    Path("evals/benchmark.json").write_text(json.dumps({"summary": out, "rows": rows}, indent=2))
+    Path("evals/benchmark.json").write_text(json.dumps({"summary": out, "rows": rows}, indent=2), encoding="utf-8")
     print(json.dumps(out, indent=2))
     sys.exit(0)
 

@@ -164,6 +164,18 @@ Discord alerts also work without n8n: set only `DISCORD_WEBHOOK_URL` and HirePan
 
 ---
 
+## Use it from an AI assistant (MCP)
+
+HirePanel ships a small **MCP server**, so Claude Desktop (or any MCP client) can list jobs, rank candidates and explain a score with its evidence quotes, in plain conversation.
+
+- **Read and score only.** There is no tool to approve, reject, email, export or delete. A human still decides.
+- **Safe by default.** Names are masked, contact details are never returned, and resume text is cleaned and labelled as untrusted data, because a resume can contain instructions aimed at the AI that reads it.
+- **Optional.** It is a separate folder with its own requirements file. The web app, Docker, n8n and Render deployments do not use it.
+
+Setup in 10 minutes: [docs/MCP.md](docs/MCP.md)
+
+---
+
 ## Connect n8n (the "notify recruiter" box)
 
 n8n is a free automation tool. HirePanel sends it two kinds of events:
@@ -263,6 +275,7 @@ app/
   store.py           SQLite or Postgres       notify.py  signed n8n + Discord
   ui/index.html      the web app (single file, no build step)
 evals/               dataset, harness, fairness test
+mcp_server/          optional MCP server (read + score only), see docs/MCP.md
 tests/               unit + API + fake-LLM tests
 n8n/                 importable workflow
 scripts/             run.sh, run.bat, setup_env.py, seed_demo.py
@@ -280,6 +293,7 @@ Send your password as `x-api-key`. In development (`ENV=development`) interactiv
 ## Evidence, not claims
 - `docs/RESULTS.md` - 150-resume labelled benchmark + ablations (verifier, shield, dual scorers, blind mode). Reproduce: `python -m evals.ablate`
 - `docs/OLLAMA.md` - run on a local model from zero, then `python scripts/bench_providers.py`
+- `docs/MCP.md` - use HirePanel from Claude Desktop through MCP (read and score only, names masked)
 - `docs/ARCHITECTURE.md`, `docs/LIMITATIONS.md`, `docs/INTERVIEW_QA.md`
 
 The benchmark data is synthetic, and some results use simulated models rather than real ones. Read `docs/LIMITATIONS.md` before quoting any number.

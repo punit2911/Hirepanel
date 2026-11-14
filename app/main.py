@@ -25,7 +25,7 @@ from .notify import Notifier
 from .orchestrator import PipelineError
 from .pipeline import Panel
 from .schemas import Email, JobSpec, Requirement
-from .security import RateLimit, SecurityHeaders, check_key
+from .security import RateLimit, SecurityHeaders, check_key, is_public_read, mask_name
 from .store import Store
 from .util import now_iso
 
@@ -249,7 +249,19 @@ def create_app(settings: Settings | None = None, *, llm: LLMRouter | None = None
         return request.app.state.rt
 
     def auth(request: Request) -> None:
+        # DEMO_MODE: strangers may READ (names masked); anything else, or any request carrying a key, is checked normally.
+        if (settings.demo_mode and settings.api_key and is_public_read(request)
+                and not request.headers.get("x-api-key") and not request.headers.get("authorization")):
+            request.state.public = True
+            return
+        request.state.public = False
         check_key(request, settings.api_key)
+
+    def _mask(c: dict) -> dict:
+        c["name"] = mask_name(c.get("name", ""))
+        if "contact" in c:
+            c["contact"] = {"name": c["name"]}
+        return c
 
     api = APIRouter(prefix="/api", dependencies=[Depends(auth)])
 
@@ -332,7 +344,8 @@ def create_app(settings: Settings | None = None, *, llm: LLMRouter | None = None
 
     @api.get("/jobs/{job_id}/candidates")
     def list_candidates(job_id: str, request: Request):
-        return rt_of(request).store.list_candidates(job_id)
+        rows = rt_of(request).store.list_candidates(job_id)
+        return [_mask(dict(c)) for c in rows] if getattr(request.state, "public", False) else rows
 
     @api.get("/jobs/{job_id}/export.csv")
     def export_csv(job_id: str, request: Request):
@@ -355,7 +368,7 @@ def create_app(settings: Settings | None = None, *, llm: LLMRouter | None = None
         c.pop("raw_text", None)
         c.pop("name_hint", None)
         c["audit"] = rt.store.audit_for(cid)
-        return c
+        return _mask(c) if getattr(request.state, "public", False) else c
 
     @api.post("/candidates/{cid}/review")
     async def review(cid: str, body: ReviewIn, request: Request):
@@ -430,7 +443,8 @@ def create_app(settings: Settings | None = None, *, llm: LLMRouter | None = None
 
     @app.get("/api/public")
     def public():
-        return {"auth_required": bool(settings.api_key), "version": __version__, "name": "HirePanel"}
+        return {"auth_required": bool(settings.api_key), "demo": bool(settings.demo_mode and settings.api_key),
+                "version": __version__, "name": "HirePanel"}
 
     @app.post("/api/webhooks/n8n")
     async def n8n_inbound(body: WebhookReview, request: Request):

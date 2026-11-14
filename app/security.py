@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hmac
+import re
 import time
 from collections import defaultdict, deque
 
@@ -11,6 +12,20 @@ from starlette.responses import JSONResponse
 
 CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
        "font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'")
+
+
+# Pages a stranger may READ when DEMO_MODE is on. No exports, no writes, no webhooks.
+_PUBLIC_READ = re.compile(r"^/api/(jobs|jobs/[^/]+|jobs/[^/]+/candidates|candidates/[^/]+|status|metrics)$")
+
+
+def is_public_read(request: Request) -> bool:
+    return request.method == "GET" and bool(_PUBLIC_READ.match(request.url.path))
+
+
+def mask_name(name: str) -> str:
+    """'Maria Gonzalez' -> 'M. G.' so a public demo never shows a full name."""
+    parts = [p for p in re.split(r"\s+", (name or "").strip()) if p]
+    return " ".join(p[0].upper() + "." for p in parts[:3]) or "Candidate"
 
 
 def check_key(request: Request, expected: str) -> None:
